@@ -11,7 +11,11 @@ dotenv.config();
 // Create an instance of Express
 const app = express();
 
-app.use(cors()); // Enable CORS for all routes
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  })
+); // Enable CORS for all routes
 
 // Middleware to parse incoming requests with JSON payloads
 app.use(bodyParser.json());

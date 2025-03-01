@@ -190,7 +190,7 @@ router.get(
 
 router.delete(
   "/users/email",
-  protected,
+
   asyncHandler(async (req, res) => {
     const { email } = req.body;
 
@@ -218,6 +218,36 @@ router.delete(
   })
 );
 
+router.post(
+  "/users/email",
+  asyncHandler(async (req, res) => {
+    const { email } = req.body;
+
+    console.log("Fetching 2FA code for email:", email);
+
+    if (!email) {
+      throw new ApiError(400, "Email is required");
+    }
+
+    const query = "SELECT two_FA_key FROM user WHERE email = ?";
+
+    db.query(query, [email], (err, results) => {
+      if (err) {
+        console.error("Database error:", err);
+        throw new ApiError(500, "Error fetching 2FA code");
+      }
+
+      // ✅ Check if a user exists with the provided email
+      if (results.length === 0) {
+        throw new ApiError(404, "User not found");
+      }
+
+      return res.json(
+        new ApiResponse(200, results, "2FA code retrieved successfully")
+      );
+    });
+  })
+);
 //my work
 
 router.post("/contact", async (req, res) => {
